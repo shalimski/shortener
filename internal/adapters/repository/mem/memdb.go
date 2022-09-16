@@ -28,7 +28,7 @@ func (m *memdb) Find(shortURL string) (domain.URL, error) {
 	defer m.mu.RUnlock()
 	longURL, ok := m.db[shortURL]
 	if !ok {
-		return domain.URL{}, fmt.Errorf("url not fount")
+		return domain.URL{}, fmt.Errorf("url not found")
 	}
 
 	u := domain.URL{
