@@ -39,7 +39,8 @@ func Run(cfg *config.Config) {
 	h := web.NewHandler(service, log)
 
 	r := chi.NewRouter()
-
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Heartbeat("/ping"))
 	r.Use(middleware.RequestID)
 	r.Use(logger.Middleware(log))
 	r.Post("/new", h.Create)
