@@ -10,4 +10,5 @@ type URLShortenerService interface {
 type LinksRepository interface {
 	Create(url domain.URL) error
 	Find(shortURL string) (domain.URL, error)
+	Delete(shortURL string) error
 }
