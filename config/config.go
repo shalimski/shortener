@@ -8,8 +8,13 @@ import (
 )
 
 type Config struct {
+	App  App
 	Node Node
 	HTTP HTTP
+}
+
+type App struct {
+	ShortURLLength int `env:"SHORT_URL_LENGTH" env-default:"7"`
 }
 
 type Node struct {

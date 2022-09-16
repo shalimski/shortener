@@ -22,9 +22,13 @@ func NewHandler(service ports.URLShortenerService, log *logger.Logger) *Handler 
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	h.log.Info(ctx, "create")
+
+	h.urlShortenerService.Create(ctx, "dfsdf")
 }
 
 func (h *Handler) Find(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	h.log.Info(ctx, "find")
+
+	h.urlShortenerService.Find(ctx, "dfsdf")
 }
