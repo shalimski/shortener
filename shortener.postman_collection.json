@@ -78,6 +78,37 @@
 			"response": []
 		},
 		{
+			"name": "Delete short URL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}:{{port}}/api/v1/abcdefG",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"v1",
+						"abcdefG"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Healthcheck",
 			"event": [
 				{
