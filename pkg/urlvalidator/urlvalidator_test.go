@@ -19,10 +19,10 @@ func TestIsURL(t *testing.T) {
 		{"http://foo.bar#com", true},
 		{"http://foobar.com", true},
 		{"https://foobar.com", true},
-		{"foobar.com", true},
+		{"foobar.com", false},
 		{"http://foobar.coffee/", true},
 		{"http://foobar.中文网/", true},
-		{"http:www.example.com/main.html", true},
+		{"http:www.example.com/main.html", false},
 	}
 	for _, test := range tests {
 		actual := urlvalidator.IsURL(test.param)
