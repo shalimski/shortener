@@ -37,7 +37,7 @@ func (s service) Create(ctx context.Context, longURL string) (string, error) {
 
 	if err := s.repo.Create(url); err != nil {
 		s.log.Error(ctx, "failed to create url", zap.Error(err))
-		return "", ErrFailedToCreate
+		return "", domain.ErrFailedToCreate
 	}
 
 	// TODO set in cache

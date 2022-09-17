@@ -46,6 +46,7 @@ func Run(cfg *config.Config) {
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Post("/shorten", h.Create)
 		r.Get("/{shortURL}", h.Find)
+		r.Delete("/{shortURL}", h.Delete)
 	})
 
 	httpServer := httpserver.New(r, httpserver.Port(cfg.HTTP.Port))

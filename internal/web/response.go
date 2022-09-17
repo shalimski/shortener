@@ -34,10 +34,6 @@ func Respond(ctx context.Context, w http.ResponseWriter, data any, statusCode in
 	return nil
 }
 
-type ResponseError struct {
-	Message string `json:"message"`
-}
-
-func NewResponseError(err string) ResponseError {
-	return ResponseError{Message: err}
+func NewResponse(message string) ResponseMessage {
+	return ResponseMessage{Message: message}
 }

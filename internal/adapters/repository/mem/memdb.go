@@ -1,7 +1,6 @@
 package memdb
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/shalimski/shortener/internal/domain"
@@ -28,7 +27,7 @@ func (m *memdb) Find(shortURL string) (domain.URL, error) {
 	defer m.mu.RUnlock()
 	longURL, ok := m.db[shortURL]
 	if !ok {
-		return domain.URL{}, fmt.Errorf("url not found")
+		return domain.URL{}, domain.ErrNotFound
 	}
 
 	u := domain.URL{

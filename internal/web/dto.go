@@ -7,3 +7,7 @@ type CreateUrlDTO struct {
 type ResponseCreateDTO struct {
 	ShortURL string `json:"short_url"`
 }
+
+type ResponseMessage struct {
+	Message string `json:"message"`
+}
