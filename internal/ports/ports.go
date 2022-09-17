@@ -9,6 +9,7 @@ import (
 type URLShortenerService interface {
 	Create(ctx context.Context, longURL string) (shortURL string, err error)
 	Find(ctx context.Context, shortURL string) (longURL string, err error)
+	Delete(ctx context.Context, shortURL string) error
 }
 
 type LinksRepository interface {
