@@ -43,8 +43,10 @@ func Run(cfg *config.Config) {
 	r.Use(middleware.Heartbeat("/ping"))
 	r.Use(middleware.RequestID)
 	r.Use(logger.Middleware(log))
-	r.Post("/new", h.Create)
-	r.Get("/{shortURL}", h.Find)
+	r.Route("/api/v1", func(r chi.Router) {
+		r.Post("/shorten", h.Create)
+		r.Get("/{shortURL}", h.Find)
+	})
 
 	httpServer := httpserver.New(r, httpserver.Port(cfg.HTTP.Port))
 	log.Info(ctx, "http service started on port: "+cfg.HTTP.Port)
