@@ -24,7 +24,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"long_url\":\"ya.ru\"\r\n}",
+					"raw": "{\r\n    \"long_url\":\"https://ya.ru\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
