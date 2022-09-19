@@ -1,3 +1,4 @@
+// Simplest implementation of a new random shortURL
 package memgen
 
 import (

@@ -14,7 +14,8 @@ type Config struct {
 }
 
 type App struct {
-	ShortURLLength int `env:"SHORT_URL_LENGTH" env-default:"7"`
+	ShortURLLength int      `env:"SHORT_URL_LENGTH" env-default:"7"`
+	EtcdEndpoints  []string `env:"ETCD_ENDPOINTS" env-default:"http://127.0.0.1:2379"`
 }
 
 type Node struct {
