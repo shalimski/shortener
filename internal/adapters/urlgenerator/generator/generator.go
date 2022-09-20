@@ -6,8 +6,6 @@ package generator
 import (
 	"context"
 	"sync"
-
-	"github.com/shalimski/shortener/pkg/coordinator"
 )
 
 const (
@@ -21,16 +19,16 @@ type urlGenerator struct {
 	currCounter int // current value of interval, Encode(current) will be next shortURL
 	maxCounter  int // max value of interval, when will be reached, it need to request new interval
 
-	coordinator Counter // distributed counter
+	counter Counter // distributed counter
 }
 
 type Counter interface {
 	NextCounter(context.Context) (int, error)
 }
 
-func NewUrlGenerator(coordinator *coordinator.Coordinator) (*urlGenerator, error) {
+func NewUrlGenerator(counter Counter) (*urlGenerator, error) {
 	u := &urlGenerator{
-		coordinator: coordinator,
+		counter: counter,
 	}
 
 	ctx := context.Background()
@@ -59,7 +57,7 @@ func (u *urlGenerator) Next(ctx context.Context) (string, error) {
 
 // setNextInterval get next value of distributed counter and set next interval based on it
 func (u *urlGenerator) setNextInterval(ctx context.Context) error {
-	next, err := u.coordinator.NextCounter(ctx)
+	next, err := u.counter.NextCounter(ctx)
 	if err != nil {
 		return err
 	}
@@ -72,6 +70,10 @@ func (u *urlGenerator) setNextInterval(ctx context.Context) error {
 
 // Encode returns base62 representation of int
 func Encode(num int) string {
+	if num < 0 {
+		return ""
+	}
+
 	result := make([]byte, 0)
 
 	for num > 0 {
