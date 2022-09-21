@@ -1,6 +1,7 @@
 package memdb
 
 import (
+	"context"
 	"sync"
 
 	"github.com/shalimski/shortener/internal/domain"
@@ -15,14 +16,14 @@ func New() *memdb {
 	return &memdb{db: make(map[string]string)}
 }
 
-func (m *memdb) Create(url domain.URL) error {
+func (m *memdb) Create(ctx context.Context, url domain.URL) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.db[url.ShortURL] = url.LongURL
 	return nil
 }
 
-func (m *memdb) Find(shortURL string) (domain.URL, error) {
+func (m *memdb) Find(ctx context.Context, shortURL string) (domain.URL, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	longURL, ok := m.db[shortURL]
@@ -38,7 +39,7 @@ func (m *memdb) Find(shortURL string) (domain.URL, error) {
 	return u, nil
 }
 
-func (m *memdb) Delete(shortURL string) error {
+func (m *memdb) Delete(ctx context.Context, shortURL string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	delete(m.db, shortURL)

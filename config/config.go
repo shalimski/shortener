@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	App  App
-	Node Node
-	HTTP HTTP
+	App   App
+	Node  Node
+	HTTP  HTTP
+	Mongo Mongo
 }
 
 type App struct {
@@ -28,6 +29,14 @@ type HTTP struct {
 	ReadTimeout     time.Duration `env:"HTTP_READ_TIMEOUT" env-default:"5s"`
 	WriteTimeout    time.Duration `env:"HTTP_WRITE_TIMEOUT" env-default:"5s"`
 	ShutdownTimeout time.Duration `env:"HTTP_SHUTDOWN_TIMEOUT" env-default:"3s"`
+}
+
+type Mongo struct {
+	Host     string `env:"MONGO_HOST" env-default:"localhost"`
+	Port     string `env:"MONGO_PORT" env-default:"27017"`
+	User     string `env:"MONGO_USER" env-default:"admin"`
+	Password string `env:"MONGO_PASSWORD" env-default:"admin"`
+	Database string `env:"MONGO_DATABASE" env-default:"shortener"`
 }
 
 func New() (*Config, error) {

@@ -9,13 +9,14 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/shalimski/shortener/config"
-	memdb "github.com/shalimski/shortener/internal/adapters/repository/mem"
+	"github.com/shalimski/shortener/internal/adapters/repository/urlrepo"
 	"github.com/shalimski/shortener/internal/adapters/urlgenerator/generator"
 	"github.com/shalimski/shortener/internal/services"
 	"github.com/shalimski/shortener/internal/web"
 	"github.com/shalimski/shortener/pkg/coordinator"
 	"github.com/shalimski/shortener/pkg/httpserver"
 	"github.com/shalimski/shortener/pkg/logger"
+	"github.com/shalimski/shortener/pkg/mongodb"
 	"go.uber.org/zap"
 )
 
@@ -28,7 +29,12 @@ func Run(cfg *config.Config) {
 	log.Info(ctx, "starting app...")
 
 	// Database init
-	db := memdb.New()
+	mongoClient, err := mongodb.NewClient(cfg)
+	if err != nil {
+		log.Fatal("failer to connect with MongoDB", zap.Error(err))
+		return
+	}
+	db := urlrepo.NewURLRepo(mongoClient.Database(cfg.Mongo.Database))
 	log.Info(ctx, "db init")
 
 	// Coordinator for distributed counter
@@ -48,6 +54,7 @@ func Run(cfg *config.Config) {
 	}
 	log.Info(ctx, "url generator init")
 
+	// Main service
 	service := services.NewService(log, db, urlgen)
 	log.Info(ctx, "service init")
 

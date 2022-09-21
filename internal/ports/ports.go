@@ -13,9 +13,9 @@ type URLShortenerService interface {
 }
 
 type LinksRepository interface {
-	Create(url domain.URL) error
-	Find(shortURL string) (domain.URL, error)
-	Delete(shortURL string) error
+	Create(ctx context.Context, url domain.URL) error
+	Find(ctx context.Context, shortURL string) (domain.URL, error)
+	Delete(ctx context.Context, shortURL string) error
 }
 
 type ShortURLGenerator interface {

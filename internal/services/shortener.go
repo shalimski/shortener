@@ -39,7 +39,7 @@ func (s service) Create(ctx context.Context, longURL string) (string, error) {
 		LongURL:  longURL,
 	}
 
-	if err := s.repo.Create(url); err != nil {
+	if err := s.repo.Create(ctx, url); err != nil {
 		s.log.Error(ctx, "failed to create url", zap.Error(err))
 		return "", domain.ErrFailedToCreate
 	}
@@ -54,7 +54,7 @@ func (s service) Find(ctx context.Context, shortURL string) (longURL string, err
 
 	// TODO try in cache
 
-	url, err := s.repo.Find(shortURL)
+	url, err := s.repo.Find(ctx, shortURL)
 	if err != nil {
 		return "", err
 	}
@@ -69,5 +69,5 @@ func (s service) Delete(ctx context.Context, shortURL string) error {
 
 	// TODO try in cache
 
-	return s.repo.Delete(shortURL)
+	return s.repo.Delete(ctx, shortURL)
 }
