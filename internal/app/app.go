@@ -10,9 +10,10 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/shalimski/shortener/config"
 	memdb "github.com/shalimski/shortener/internal/adapters/repository/mem"
-	"github.com/shalimski/shortener/internal/adapters/urlgenerator/memgen"
+	"github.com/shalimski/shortener/internal/adapters/urlgenerator/generator"
 	"github.com/shalimski/shortener/internal/services"
 	"github.com/shalimski/shortener/internal/web"
+	"github.com/shalimski/shortener/pkg/coordinator"
 	"github.com/shalimski/shortener/pkg/httpserver"
 	"github.com/shalimski/shortener/pkg/logger"
 	"go.uber.org/zap"
@@ -29,8 +30,22 @@ func Run(cfg *config.Config) {
 	// Database init
 	db := memdb.New()
 	log.Info(ctx, "db init")
-	//
-	urlgen := memgen.NewUrlGenerator(cfg.App.ShortURLLength)
+
+	// Coordinator for distributed counter
+	counter, err := coordinator.NewCoordinator(cfg.App.EtcdEndpoints)
+	defer counter.Shutdown()
+	if err != nil {
+		log.Fatal("failer to start distributed counter", zap.Error(err))
+		return
+	}
+	log.Info(ctx, "distributed counter init")
+
+	// Generator
+	urlgen, err := generator.NewUrlGenerator(counter)
+	if err != nil {
+		log.Fatal("failer to init url generator", zap.Error(err))
+		return
+	}
 	log.Info(ctx, "url generator init")
 
 	service := services.NewService(log, db, urlgen)
@@ -64,7 +79,7 @@ func Run(cfg *config.Config) {
 	}
 
 	// Shutdown
-	err := httpServer.Shutdown()
+	err = httpServer.Shutdown()
 	if err != nil {
 		log.Error(ctx, "failed to shutdown", zap.Error(err))
 	}

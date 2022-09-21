@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/shalimski/shortener/internal/domain"
 	"github.com/shalimski/shortener/internal/ports"
@@ -27,7 +28,10 @@ func NewService(log *logger.Logger, repo ports.LinksRepository, urlgen ports.Sho
 func (s service) Create(ctx context.Context, longURL string) (string, error) {
 	s.log.Debug(ctx, "start Create method", zap.String("longURL", longURL))
 
-	shortURL := s.urlgen.Next(ctx)
+	shortURL, err := s.urlgen.Next(ctx)
+	if err != nil {
+		return "", fmt.Errorf("failed to get next short url: %w", err)
+	}
 	s.log.Debug(ctx, "generated url", zap.String("shortURL", shortURL))
 
 	url := domain.URL{

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Scalingo/go-etcd-lock/v5/lock"
+	"google.golang.org/grpc"
 
 	etcd "go.etcd.io/etcd/client/v3"
 )
@@ -25,6 +26,8 @@ func NewCoordinator(endpoints []string) (*Coordinator, error) {
 	cli, err := etcd.New(etcd.Config{
 		Endpoints:   endpoints,
 		DialTimeout: 2 * time.Second,
+		DialOptions: []grpc.DialOption{grpc.WithBlock()},
+		
 	})
 	if err != nil {
 		return nil, err

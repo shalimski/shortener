@@ -15,6 +15,6 @@ func NewUrlGenerator(len int) *urlGenerator {
 	return &urlGenerator{len: len}
 }
 
-func (u *urlGenerator) Next(ctx context.Context) string {
-	return randomstring.New(u.len)
+func (u *urlGenerator) Next(ctx context.Context) (string, error) {
+	return randomstring.New(u.len), nil
 }

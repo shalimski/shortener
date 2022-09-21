@@ -19,5 +19,5 @@ type LinksRepository interface {
 }
 
 type ShortURLGenerator interface {
-	Next(ctx context.Context) string
+	Next(ctx context.Context) (string, error)
 }
