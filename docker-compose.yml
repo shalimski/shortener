@@ -17,5 +17,10 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
+  redis:
+    image: redis:alpine
+    command: redis-server --bind redis --requirepass admin --maxmemory 256mb --maxmemory-policy allkeys-lfu
+    ports:
+      - 6379:6379
 volumes:
   dbdata:

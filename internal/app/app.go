@@ -9,6 +9,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/shalimski/shortener/config"
+	"github.com/shalimski/shortener/internal/adapters/cache"
+
 	"github.com/shalimski/shortener/internal/adapters/repository/urlrepo"
 	"github.com/shalimski/shortener/internal/adapters/urlgenerator/generator"
 	"github.com/shalimski/shortener/internal/services"
@@ -31,32 +33,34 @@ func Run(cfg *config.Config) {
 	// Database init
 	mongoClient, err := mongodb.NewClient(cfg)
 	if err != nil {
-		log.Fatal("failer to connect with MongoDB", zap.Error(err))
+		log.Fatal("failed to connect MongoDB", zap.Error(err))
 		return
 	}
 	db := urlrepo.NewURLRepo(mongoClient.Database(cfg.Mongo.Database))
-	log.Info(ctx, "db init")
+	log.Info(ctx, "MongoDB initialized")
 
 	// Coordinator for distributed counter
 	counter, err := coordinator.NewCoordinator(cfg.App.EtcdEndpoints)
 	defer counter.Shutdown()
 	if err != nil {
-		log.Fatal("failer to start distributed counter", zap.Error(err))
+		log.Fatal("failed to start distributed counter", zap.Error(err))
 		return
 	}
-	log.Info(ctx, "distributed counter init")
+	log.Info(ctx, "distributed counter initialized")
 
 	// Generator
 	urlgen, err := generator.NewUrlGenerator(counter)
 	if err != nil {
-		log.Fatal("failer to init url generator", zap.Error(err))
+		log.Fatal("failed to init url generator", zap.Error(err))
 		return
 	}
-	log.Info(ctx, "url generator init")
+	log.Info(ctx, "url generator initialized")
+
+	redis := cache.NewCache(cfg)
 
 	// Main service
-	service := services.NewService(log, db, urlgen)
-	log.Info(ctx, "service init")
+	service := services.NewService(log, db, urlgen, redis)
+	log.Info(ctx, "service initialized")
 
 	h := web.NewHandler(service, log)
 
@@ -74,6 +78,8 @@ func Run(cfg *config.Config) {
 	httpServer := httpserver.New(r, httpserver.Port(cfg.HTTP.Port))
 	log.Info(ctx, "http service started on port: "+cfg.HTTP.Port)
 
+	log.Info(ctx, "-- Ready to accept connections --")
+
 	// Waiting signal
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
@@ -90,4 +96,7 @@ func Run(cfg *config.Config) {
 	if err != nil {
 		log.Error(ctx, "failed to shutdown", zap.Error(err))
 	}
+
+	counter.Shutdown()
+	redis.Shutdown(ctx)
 }

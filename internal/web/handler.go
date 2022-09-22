@@ -16,10 +16,10 @@ const shortURLParam = "shortURL"
 
 type Handler struct {
 	log                 *logger.Logger
-	urlShortenerService ports.URLShortenerService
+	urlShortenerService ports.ShortenerService
 }
 
-func NewHandler(service ports.URLShortenerService, log *logger.Logger) *Handler {
+func NewHandler(service ports.ShortenerService, log *logger.Logger) *Handler {
 	return &Handler{
 		urlShortenerService: service,
 		log:                 log,

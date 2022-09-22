@@ -12,6 +12,7 @@ type Config struct {
 	Node  Node
 	HTTP  HTTP
 	Mongo Mongo
+	Redis Redis
 }
 
 type App struct {
@@ -37,6 +38,11 @@ type Mongo struct {
 	User     string `env:"MONGO_USER" env-default:"admin"`
 	Password string `env:"MONGO_PASSWORD" env-default:"admin"`
 	Database string `env:"MONGO_DATABASE" env-default:"shortener"`
+}
+
+type Redis struct {
+	DSN      string `env:"REDIS_DSN" env-default:"127.0.0.1:6379"`
+	Password string `env:"REDIS_PASSWORD" env-default:"admin"`
 }
 
 func New() (*Config, error) {
