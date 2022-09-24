@@ -65,11 +65,13 @@ func Run(cfg *config.Config) {
 	h := web.NewHandler(service, log)
 
 	r := chi.NewRouter()
+
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Heartbeat("/ping"))
-	r.Use(middleware.RequestID)
-	r.Use(logger.Middleware(log))
+	r.Mount("/debug", middleware.Profiler())
 	r.Route("/api/v1", func(r chi.Router) {
+		r.Use(middleware.RequestID)
+		r.Use(logger.Middleware(log))
 		r.Post("/shorten", h.Create)
 		r.Get("/{shortURL}", h.Find)
 		r.Delete("/{shortURL}", h.Delete)
@@ -98,5 +100,4 @@ func Run(cfg *config.Config) {
 	}
 
 	counter.Shutdown()
-	redis.Shutdown(ctx)
 }

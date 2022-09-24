@@ -43,7 +43,3 @@ func (c *cache) Get(ctx context.Context, key string) (string, error) {
 func (c *cache) Del(ctx context.Context, key string) error {
 	return c.rdb.Del(ctx, key).Err()
 }
-
-func (c *cache) Shutdown(ctx context.Context) {
-	c.rdb.Shutdown(ctx)
-}
