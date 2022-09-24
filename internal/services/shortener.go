@@ -59,7 +59,7 @@ func (s service) Find(ctx context.Context, shortURL string) (longURL string, err
 		return longURL, nil
 	}
 
-	if !errors.Is(err, domain.ErrNotFound) {
+	if err != nil && !errors.Is(err, domain.ErrNotFound) {
 		s.log.Error(ctx, "failed to get in cache", zap.Error(err))
 	}
 

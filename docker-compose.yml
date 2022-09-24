@@ -1,6 +1,20 @@
 version: '3.7'
 
 services:
+  shortener:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - MONGO_HOST=mongodb
+      - ETCD_ENDPOINTS=http://etcd:2379
+      - REDIS_DSN=redis:6379
+    depends_on:
+      - mongodb
+      - etcd
+      - redis
+
   etcd:
     image: 'bitnami/etcd:latest'
     environment:
@@ -12,8 +26,6 @@ services:
     image: mongo
     ports:
       - '27017:27017'
-    volumes:
-      - dbdata:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
@@ -22,5 +34,4 @@ services:
     command: redis-server --bind redis --requirepass admin --maxmemory 256mb --maxmemory-policy allkeys-lfu
     ports:
       - 6379:6379
-volumes:
-  dbdata:
+
