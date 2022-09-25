@@ -7,6 +7,9 @@ run:
 test:
 	go test ./... -count=1 -cover
 
+test-integration:
+	go test -tags=integration ./tests -count=1 -cover -coverpkg=./...
+
 .PHONY: lint
 lint:
 	golangci-lint run ./... 
