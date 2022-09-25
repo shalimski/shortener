@@ -48,7 +48,8 @@ func (c *Coordinator) NextCounter(ctx context.Context) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("failed to lock: %w", err)
 	}
-	defer locker.Release()
+
+	defer locker.Release() //nolint:errcheck // simple
 
 	resp, err := c.cli.Get(ctx, counter)
 	if err != nil {

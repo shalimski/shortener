@@ -15,8 +15,6 @@ linters-settings:
     min-occurrences: 2
   misspell:
     locale: US
-  lll:
-    line-length: 140
   goimports:
     local-prefixes: github.com/golangci/golangci-lint
   gocritic:
@@ -60,7 +58,6 @@ linters:
     - gosimple
     - govet
     - ineffassign
-    - lll
     - misspell
     - nakedret
     - nestif
@@ -69,9 +66,7 @@ linters:
     - nolintlint
     - prealloc
     - revive
-    - sqlclosecheck
     - staticcheck
-    - structcheck
     - stylecheck
     - testpackage
     - typecheck

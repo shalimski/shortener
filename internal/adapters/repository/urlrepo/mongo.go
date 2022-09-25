@@ -29,6 +29,7 @@ func (r *URLRepo) Create(ctx context.Context, url domain.URL) error {
 	}
 
 	_, err := r.collection.InsertOne(ctx, url)
+
 	return err
 }
 

@@ -7,7 +7,8 @@ import (
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+//nolint:gosec  // mock realization
+var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano())) //nolint:gochecknoglobals // mock
 
 func New(length int) string {
 	return StringWithCharset(length, charset)
