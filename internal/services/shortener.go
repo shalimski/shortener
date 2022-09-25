@@ -35,6 +35,7 @@ func (s service) Create(ctx context.Context, longURL string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to get next short url: %w", err)
 	}
+
 	s.log.Debug(ctx, "generated url", zap.String("shortURL", shortURL))
 
 	url := domain.URL{
@@ -44,10 +45,13 @@ func (s service) Create(ctx context.Context, longURL string) (string, error) {
 
 	if err := s.repo.Create(ctx, url); err != nil {
 		s.log.Error(ctx, "failed to create url", zap.Error(err))
+
 		return "", domain.ErrFailedToCreate
 	}
 
-	s.cache.Set(ctx, shortURL, longURL)
+	if err := s.cache.Set(ctx, shortURL, longURL); err != nil {
+		s.log.Error(ctx, "failed to set in cache", zap.Error(err))
+	}
 
 	return shortURL, nil
 }
@@ -55,7 +59,7 @@ func (s service) Create(ctx context.Context, longURL string) (string, error) {
 func (s service) Find(ctx context.Context, shortURL string) (longURL string, err error) {
 	s.log.Debug(ctx, "start Find method", zap.String("shortURL", shortURL))
 
-	if longURL, err := s.cache.Get(ctx, shortURL); err == nil {
+	if longURL, err = s.cache.Get(ctx, shortURL); err == nil {
 		return longURL, nil
 	}
 

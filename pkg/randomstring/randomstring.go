@@ -18,5 +18,6 @@ func StringWithCharset(length int, charset string) string {
 	for i := range b {
 		b[i] = charset[seededRand.Intn(len(charset))]
 	}
+
 	return string(b)
 }

@@ -27,7 +27,6 @@ func NewCoordinator(endpoints []string) (*Coordinator, error) {
 		Endpoints:   endpoints,
 		DialTimeout: 2 * time.Second,
 		DialOptions: []grpc.DialOption{grpc.WithBlock()},
-		
 	})
 	if err != nil {
 		return nil, err
@@ -45,11 +44,11 @@ func NewCoordinator(endpoints []string) (*Coordinator, error) {
 }
 
 func (c *Coordinator) NextCounter(ctx context.Context) (int, error) {
-	lock, err := c.locker.WaitAcquire(locker, 2)
+	locker, err := c.locker.WaitAcquire(locker, 2)
 	if err != nil {
 		return 0, fmt.Errorf("failed to lock: %w", err)
 	}
-	defer lock.Release()
+	defer locker.Release()
 
 	resp, err := c.cli.Get(ctx, counter)
 	if err != nil {

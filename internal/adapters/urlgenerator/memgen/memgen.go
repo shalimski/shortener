@@ -8,13 +8,13 @@ import (
 )
 
 type urlGenerator struct {
-	len int
+	length int
 }
 
-func NewUrlGenerator(len int) *urlGenerator {
-	return &urlGenerator{len: len}
+func NewURLGenerator(length int) *urlGenerator {
+	return &urlGenerator{length: length}
 }
 
 func (u *urlGenerator) Next(ctx context.Context) (string, error) {
-	return randomstring.New(u.len), nil
+	return randomstring.New(u.length), nil
 }

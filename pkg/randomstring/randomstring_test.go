@@ -24,4 +24,3 @@ func TestNew(t *testing.T) {
 	assert.NotEqual(t, first, second)
 	assert.NotEqual(t, first, third)
 }
-

@@ -26,7 +26,7 @@ type Counter interface {
 	NextCounter(context.Context) (int, error)
 }
 
-func NewUrlGenerator(counter Counter) (*urlGenerator, error) {
+func NewURLGenerator(counter Counter) (*urlGenerator, error) {
 	u := &urlGenerator{
 		counter: counter,
 	}
@@ -51,7 +51,8 @@ func (u *urlGenerator) Next(ctx context.Context) (string, error) {
 	}
 
 	shortURL := Encode(u.currCounter)
-	u.currCounter = u.currCounter + 1
+	u.currCounter++
+
 	return shortURL, nil
 }
 
@@ -77,10 +78,10 @@ func Encode(num int) string {
 	result := make([]byte, 0)
 
 	for num > 0 {
-
 		curr := num % base
 		num /= base
-		result = append([]byte{chars[int(curr)]}, result...)
+
+		result = append([]byte{chars[curr]}, result...)
 	}
 
 	return string(result)

@@ -1,6 +1,6 @@
 package web
 
-type CreateUrlDTO struct {
+type CreateURLDTO struct {
 	LongURL string `json:"long_url"`
 }
 

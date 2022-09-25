@@ -31,13 +31,15 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	h.log.Info(ctx, "start create handler")
 
 	// Reading body
-	var data CreateUrlDTO
+	var data CreateURLDTO
 
 	err := Decode(r, &data)
 	defer r.Body.Close()
+
 	if err != nil {
 		h.log.Info(ctx, "failed to parse body")
 		err = Respond(ctx, w, NewResponse(err.Error()), http.StatusBadRequest)
+
 		if err != nil {
 			h.log.Error(ctx, "failed to respond", zap.Error(err))
 		}
@@ -49,6 +51,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if !urlvalidator.IsURL(data.LongURL) {
 		h.log.Info(ctx, "invalid long url", zap.String("longURL", data.LongURL))
 		err = Respond(ctx, w, NewResponse("invalid long url"), http.StatusBadRequest)
+
 		if err != nil {
 			h.log.Error(ctx, "failed to respond", zap.Error(err))
 		}
@@ -61,6 +64,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error(ctx, "failed to create url", zap.String("longURL", data.LongURL), zap.Error(err))
 		err = Respond(ctx, w, NewResponse("failed to create url"), http.StatusInternalServerError)
+
 		if err != nil {
 			h.log.Error(ctx, "failed to respond", zap.Error(err))
 		}
@@ -81,6 +85,7 @@ func (h *Handler) Find(w http.ResponseWriter, r *http.Request) {
 	// Validation
 	if !urlvalidator.IsShortURLSuffix(shortURL) {
 		h.log.Info(ctx, "invalid short url", zap.String("shortURL", shortURL))
+
 		err := Respond(ctx, w, NewResponse("invalid short url"), http.StatusBadRequest)
 		if err != nil {
 			h.log.Error(ctx, "failed to respond", zap.Error(err))
@@ -90,23 +95,25 @@ func (h *Handler) Find(w http.ResponseWriter, r *http.Request) {
 	}
 
 	longURL, err := h.urlShortenerService.Find(ctx, shortURL)
-	if err != nil {
-		if errors.Is(err, domain.ErrNotFound) {
-			err := Respond(ctx, w, NewResponse("short url not found"), http.StatusNotFound)
-			if err != nil {
-				h.log.Error(ctx, "failed to respond", zap.Error(err))
-			}
 
-			return
-		}
-
-		h.log.Info(ctx, "failed to find", zap.String("shortURL", shortURL), zap.String("error", err.Error()))
-		err := Respond(ctx, w, NewResponse("failed to find"), http.StatusInternalServerError)
+	if err != nil && errors.Is(err, domain.ErrNotFound) {
+		err = Respond(ctx, w, NewResponse("short url not found"), http.StatusNotFound)
 		if err != nil {
 			h.log.Error(ctx, "failed to respond", zap.Error(err))
 		}
-		return
 
+		return
+	}
+
+	if err != nil {
+		h.log.Info(ctx, "failed to find", zap.String("shortURL", shortURL), zap.String("error", err.Error()))
+		err = Respond(ctx, w, NewResponse("failed to find"), http.StatusInternalServerError)
+
+		if err != nil {
+			h.log.Error(ctx, "failed to respond", zap.Error(err))
+		}
+
+		return
 	}
 
 	http.Redirect(w, r, longURL, http.StatusMovedPermanently)
@@ -121,6 +128,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	// Validation
 	if !urlvalidator.IsShortURLSuffix(shortURL) {
 		h.log.Info(ctx, "invalid short url", zap.String("shortURL", shortURL))
+
 		err := Respond(ctx, w, NewResponse("invalid short url"), http.StatusBadRequest)
 		if err != nil {
 			h.log.Error(ctx, "failed to respond", zap.Error(err))
@@ -130,23 +138,27 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := h.urlShortenerService.Delete(ctx, shortURL)
-	if err != nil {
-		if errors.Is(err, domain.ErrNotFound) {
-			err := Respond(ctx, w, NewResponse("short url not found"), http.StatusNotFound)
-			if err != nil {
-				h.log.Error(ctx, "failed to respond", zap.Error(err))
-			}
 
-			return
-		}
+	if err != nil && errors.Is(err, domain.ErrNotFound) {
+		err = Respond(ctx, w, NewResponse("short url not found"), http.StatusNotFound)
 
-		h.log.Info(ctx, "failed to delete", zap.String("shortURL", shortURL), zap.String("error", err.Error()))
-		err := Respond(ctx, w, NewResponse("failed to delete"), http.StatusInternalServerError)
 		if err != nil {
 			h.log.Error(ctx, "failed to respond", zap.Error(err))
 		}
-		return
 
+		return
+	}
+
+	if err != nil {
+		h.log.Info(ctx, "failed to delete", zap.String("shortURL", shortURL), zap.String("error", err.Error()))
+
+		err = Respond(ctx, w, NewResponse("failed to delete"), http.StatusInternalServerError)
+
+		if err != nil {
+			h.log.Error(ctx, "failed to respond", zap.Error(err))
+		}
+
+		return
 	}
 
 	err = Respond(ctx, w, NewResponse("url deleted"), http.StatusOK)

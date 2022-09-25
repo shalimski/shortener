@@ -12,7 +12,7 @@ import (
 
 func TestNewUrlGenerator(t *testing.T) {
 	// start position
-	gen, err := NewUrlGenerator(&MockCounter{})
+	gen, err := NewURLGenerator(&MockCounter{})
 
 	assert.NoError(t, err)
 
@@ -26,7 +26,7 @@ func TestNewUrlGenerator(t *testing.T) {
 	assert.Equal(t, second, "c")
 
 	// fixed position
-	gen, err = NewUrlGenerator(&MockCounter{current: 42})
+	gen, err = NewURLGenerator(&MockCounter{current: 42})
 
 	assert.NoError(t, err)
 	first, err = gen.Next(ctx)

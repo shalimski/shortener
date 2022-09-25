@@ -11,6 +11,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, data any, statusCode in
 	// If there is nothing to marshal then set status code and return.
 	if statusCode == http.StatusNoContent {
 		w.WriteHeader(statusCode)
+
 		return nil
 	}
 

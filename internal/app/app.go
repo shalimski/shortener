@@ -23,8 +23,6 @@ import (
 )
 
 func Run(cfg *config.Config) {
-	// Logger init
-
 	ctx := context.Background()
 	log := logger.NewLogger()
 	log.With(zap.String("node", cfg.Node.Name))
@@ -34,26 +32,34 @@ func Run(cfg *config.Config) {
 	mongoClient, err := mongodb.NewClient(cfg)
 	if err != nil {
 		log.Fatal("failed to connect MongoDB", zap.Error(err))
+
 		return
 	}
+
 	db := urlrepo.NewURLRepo(mongoClient.Database(cfg.Mongo.Database))
+
 	log.Info(ctx, "MongoDB initialized")
 
 	// Coordinator for distributed counter
 	counter, err := coordinator.NewCoordinator(cfg.App.EtcdEndpoints)
-	defer counter.Shutdown()
 	if err != nil {
 		log.Fatal("failed to start distributed counter", zap.Error(err))
+
 		return
 	}
+
+	defer counter.Shutdown()
+
 	log.Info(ctx, "distributed counter initialized")
 
 	// Generator
-	urlgen, err := generator.NewUrlGenerator(counter)
+	urlgen, err := generator.NewURLGenerator(counter)
 	if err != nil {
-		log.Fatal("failed to init url generator", zap.Error(err))
+		log.Error(ctx, "failed to init url generator", zap.Error(err))
+
 		return
 	}
+
 	log.Info(ctx, "url generator initialized")
 
 	redis := cache.NewCache(cfg)
@@ -89,8 +95,8 @@ func Run(cfg *config.Config) {
 	select {
 	case s := <-interrupt:
 		log.Info(ctx, "signal: "+s.String())
-	case err := <-httpServer.Notify():
-		log.Error(ctx, "httpServer was stopped", zap.Error(err))
+	case servererr := <-httpServer.Notify():
+		log.Error(ctx, "httpServer was stopped", zap.Error(servererr))
 	}
 
 	// Shutdown
