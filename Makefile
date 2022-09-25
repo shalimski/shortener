@@ -4,9 +4,11 @@ VERSION := 1.0
 run:
 	go run ./cmd/shortener/main.go
 
+.PHONY: test
 test:
 	go test ./... -count=1 -cover
 
+.PHONY: test-integration
 test-integration:
 	go test -tags=integration ./tests -count=1 -cover -coverpkg=./...
 
