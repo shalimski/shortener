@@ -5,23 +5,29 @@ import (
 	"errors"
 
 	"github.com/shalimski/shortener/internal/domain"
+	"github.com/shalimski/shortener/internal/ports"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const urlCollection = "links"
 
-type URLRepo struct {
+var _ ports.Repository = (*urlRepo)(nil)
+
+// repository to save links
+type urlRepo struct {
 	collection *mongo.Collection
 }
 
-func NewURLRepo(db *mongo.Database) *URLRepo {
-	return &URLRepo{
+// NewURLRepo create instance of urlRepo
+func NewURLRepo(db *mongo.Database) ports.Repository {
+	return &urlRepo{
 		collection: db.Collection(urlCollection),
 	}
 }
 
-func (r *URLRepo) Create(ctx context.Context, url domain.URL) error {
+// Create add new value to DB
+func (r *urlRepo) Create(ctx context.Context, url domain.URL) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -33,7 +39,8 @@ func (r *URLRepo) Create(ctx context.Context, url domain.URL) error {
 	return err
 }
 
-func (r *URLRepo) Find(ctx context.Context, shortURL string) (domain.URL, error) {
+// Find first value by shortURL
+func (r *urlRepo) Find(ctx context.Context, shortURL string) (domain.URL, error) {
 	select {
 	case <-ctx.Done():
 		return domain.URL{}, ctx.Err()
@@ -53,7 +60,8 @@ func (r *URLRepo) Find(ctx context.Context, shortURL string) (domain.URL, error)
 	return url, nil
 }
 
-func (r *URLRepo) Delete(ctx context.Context, shortURL string) error {
+// Delete value by short url
+func (r *urlRepo) Delete(ctx context.Context, shortURL string) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()

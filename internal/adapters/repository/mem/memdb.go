@@ -5,14 +5,16 @@ import (
 	"sync"
 
 	"github.com/shalimski/shortener/internal/domain"
+	"github.com/shalimski/shortener/internal/ports"
 )
 
+// basic realization for storage
 type memdb struct {
 	mu sync.RWMutex
 	db map[string]string
 }
 
-func New() *memdb {
+func New() ports.Repository {
 	return &memdb{db: make(map[string]string)}
 }
 
