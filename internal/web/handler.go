@@ -26,6 +26,7 @@ func NewHandler(service ports.ShortenerService, log *logger.Logger) *Handler {
 	}
 }
 
+// Create handler validate request, create new short url and respond it
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	h.log.Info(ctx, "start create handler")
@@ -68,6 +69,8 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			h.log.Error(ctx, "failed to respond", zap.Error(err))
 		}
+
+		return
 	}
 
 	err = Respond(ctx, w, ResponseCreateDTO{ShortURL: shortURL}, http.StatusOK)
@@ -76,6 +79,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Find handler vaдidate request, finds and redirects to long url
 func (h *Handler) Find(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	h.log.Info(ctx, "start find handler")
@@ -119,6 +123,7 @@ func (h *Handler) Find(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, longURL, http.StatusMovedPermanently)
 }
 
+// Delete handler validate request and delete short url value
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	h.log.Info(ctx, "start delete handler")
