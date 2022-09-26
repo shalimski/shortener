@@ -11,7 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// servise implements URLShortenerService
+var _ ports.ShortenerService = (*service)(nil)
+
 type service struct {
 	log    *logger.Logger
 	repo   ports.Repository
@@ -19,7 +20,8 @@ type service struct {
 	cache  ports.Cacher
 }
 
-func NewService(log *logger.Logger, repo ports.Repository, urlgen ports.ShortURLGenerator, cache ports.Cacher) service {
+// NewService create instance of core service, it incapsulate all business logic
+func NewService(log *logger.Logger, repo ports.Repository, urlgen ports.ShortURLGenerator, cache ports.Cacher) ports.ShortenerService {
 	return service{
 		log:    log,
 		repo:   repo,
@@ -28,6 +30,7 @@ func NewService(log *logger.Logger, repo ports.Repository, urlgen ports.ShortURL
 	}
 }
 
+// Create generate new short url for long url and save it to storage and cache
 func (s service) Create(ctx context.Context, longURL string) (string, error) {
 	s.log.Debug(ctx, "start Create method", zap.String("longURL", longURL))
 
@@ -56,6 +59,7 @@ func (s service) Create(ctx context.Context, longURL string) (string, error) {
 	return shortURL, nil
 }
 
+// Find gets the long link from the cache or storage
 func (s service) Find(ctx context.Context, shortURL string) (longURL string, err error) {
 	s.log.Debug(ctx, "start Find method", zap.String("shortURL", shortURL))
 
@@ -79,6 +83,7 @@ func (s service) Find(ctx context.Context, shortURL string) (longURL string, err
 	return url.LongURL, nil
 }
 
+// Delete short url from cache and storage
 func (s service) Delete(ctx context.Context, shortURL string) error {
 	s.log.Debug(ctx, "start Delete method", zap.String("shortURL", shortURL))
 
