@@ -16,6 +16,10 @@ test-integration:
 lint:
 	golangci-lint run ./... 
 
+.PHONY: gen
+gen:
+	mockgen -source ./internal/ports/ports.go -destination ./internal/ports/mock/ports_mock.go	
+
 .PHONY: docker-build
 docker-build:
 	docker build . -t shalimski/shortener:${VERSION}

@@ -76,7 +76,7 @@ func (s service) Find(ctx context.Context, shortURL string) (longURL string, err
 		return "", err
 	}
 
-	if err = s.cache.Set(ctx, shortURL, longURL); err != nil {
+	if err = s.cache.Set(ctx, url.ShortURL, url.LongURL); err != nil {
 		s.log.Error(ctx, "failed to get in cache", zap.Error(err))
 	}
 

@@ -14,6 +14,7 @@ require (
 	github.com/Scalingo/go-etcd-lock/v5 v5.0.6
 	github.com/docker/go-connections v0.4.0
 	github.com/go-redis/redis/v9 v9.0.0-beta.2
+	github.com/golang/mock v1.6.0
 	github.com/testcontainers/testcontainers-go v0.14.0
 	go.mongodb.org/mongo-driver v1.10.2
 	google.golang.org/grpc v1.47.0
