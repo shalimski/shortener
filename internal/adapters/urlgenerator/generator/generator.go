@@ -6,6 +6,8 @@ package generator
 import (
 	"context"
 	"sync"
+
+	"github.com/shalimski/shortener/internal/ports"
 )
 
 const (
@@ -26,7 +28,7 @@ type Counter interface {
 	NextCounter(context.Context) (int, error)
 }
 
-func NewURLGenerator(counter Counter) (*urlGenerator, error) {
+func NewURLGenerator(counter Counter) (ports.ShortURLGenerator, error) {
 	u := &urlGenerator{
 		counter: counter,
 	}

@@ -4,6 +4,7 @@ package memgen
 import (
 	"context"
 
+	"github.com/shalimski/shortener/internal/ports"
 	"github.com/shalimski/shortener/pkg/randomstring"
 )
 
@@ -11,7 +12,7 @@ type urlGenerator struct {
 	length int
 }
 
-func NewURLGenerator(length int) *urlGenerator {
+func NewURLGenerator(length int) ports.ShortURLGenerator {
 	return &urlGenerator{length: length}
 }
 
